@@ -5,6 +5,7 @@ import { Wallet } from './entities/wallet.entity';
 import mongoose, { Model } from 'mongoose';
 import { WalletAsset } from './entities/wallet-asset.entity';
 import { CreateWalletAssetDto } from './dto/create-wallet-asset.dto';
+import { Asset } from 'src/assets/entities/asset.entity';
 
 @Injectable()
 export class WalletsService {
@@ -33,10 +34,12 @@ export class WalletsService {
   findOne(id: string) {
     return this.walletSchema.findById(id).populate([
       {
-        path: 'assets',
-        populate: ['asset']
-      }
-    ]);
+        path: 'assets', 
+        populate: ['asset'],
+      },
+    ]) as Promise<
+      (Wallet & { assets: (WalletAsset & { asset: Asset })[] }) | null
+    >;
   }
 
   async createWalletAsset(createWalletAssetDto: CreateWalletAssetDto) {
